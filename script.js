@@ -18,7 +18,7 @@ let circleSize; // variable for random circle size
 
 let hit; // variable for the third circle and falling circles hitting
 
-let winMessageDuration = 300; // Number of frames to display the winning message
+let winMessageDuration = 120; // Number of frames to display the winning message
 let winMessageTimer = 0; // Timer variable
 
 let gameRunning = false;
@@ -30,9 +30,9 @@ function setup() {
     circleY = 0; 
     ySpeed = 1;
     cY = windowHeight;
-    cX = windowWidth;
-    xCodeSpeed = 2;
-    yBananasSpeed = 2;
+    cX = random(width);
+    xCodeSpeed = 1.8;
+    yBananasSpeed = 1.8;
     circleColor1 = color(random(255), random(255), random(255));
     circleColor2 = color(random(255), random(255), random(255));
     circleSize = random(80, 230);
@@ -41,15 +41,18 @@ function setup() {
 
 function draw() {
     background(0); // sets the background to black, the background repeadtedly updates in function draw
+    stroke(0); // makes the stroke of the circles black
 
     // If the game running is false (which it is because we have initialized it as false), then the text will appear. In the keypressed function, the spacebar makes 'gamerunning' true. 
     if (!gameRunning) {
         fill(255); // Sets text colour to white
         textSize(30);
         textAlign(CENTER, CENTER);
-        text("Click the SpaceBar to start!", width / 2, height / 2);
-        text("Try to use the up arrow and left arrow", width / 2, 2 * height / 3);
-        text("to navigate the ellipse to the top!", width / 2, 2.15 * height / 3);
+        text("Click the SpaceBar to start!", width / 2, height / 4);
+        text("Try to use the arrow keys", width / 2, 2 * height / 5);
+        text("to navigate the ellipse to the top!", width / 2, 2.25 * height / 5);
+        text("For advanced functionality,", width / 2, 2.6 * height / 4);
+        text("play around with mousePressed!", width / 2, 2.8 * height / 4);
     } else {
 
     // Determine the quadrant based on the position of the third circle
@@ -88,7 +91,7 @@ function draw() {
 
     // drawing the ellipse that IS the game
     noFill();
-    circle(cX, cY, 50);
+    circle(cX, cY, 50)
     
     // Check for collision with falling circles using dist (or distance) function
     if (
@@ -100,15 +103,18 @@ function draw() {
         hit = false;
     }
     
+    makemeLines(); // draws lines at the end
+
     if (runCode) {
         // modify state of third circle horizontally
-        cX = cX - xCodeSpeed;
+        cX = cX + xCodeSpeed; // Change this line to add xCodeSpeed instead of subtracting
         
         // reverse direction when hitting the edges 
         if (cX <= 0 || cX >= windowWidth) {
             xCodeSpeed = -xCodeSpeed;
         }
     }
+    
 
     if (runBananas) {
         // modify state of third circle vertically
@@ -119,8 +125,6 @@ function draw() {
             yBananasSpeed = -yBananasSpeed;
         } 
     }
-
-    makemeLines(); // draws lines at the end
 
     // Display text on collision
     if (hit) {
@@ -138,16 +142,13 @@ function draw() {
             text("Congratulations! You won!", width / 2, height / 2);
             text("Click the ENTER key to play again", width / 2, 2.18 * height / 4);
             textAlign(CENTER, CENTER);
-
+    
             // Increase the timer
             winMessageTimer++;
-        } else {
-            // Reset the timer and do other actions if needed
-            winMessageTimer = 0;  
-        }
+        } 
     }
 
-    }
+}   
 
 }
 
@@ -157,6 +158,10 @@ function keyPressed() {
     // After that we establish that the up arrow key will run the 'runBananas' variable and turn it true
 
     if (keyCode === LEFT_ARROW) {
+        xCodeSpeed = -Math.abs(xCodeSpeed); // Set xCodeSpeed to a negative value for left movement
+        runCode = true;
+    } else if (keyCode === RIGHT_ARROW) { // Add this block for right arrow
+        xCodeSpeed = Math.abs(xCodeSpeed); // Set xCodeSpeed to a positive value for right movement
         runCode = true;
     } else if (keyCode === UP_ARROW) {
         runBananas = true;
@@ -165,7 +170,18 @@ function keyPressed() {
         gameRunning = true;
     }
     if (keyCode === 13) {
+        circleY = 0;
+        ySpeed = 1;
+        cY = windowHeight;
+        cX = random(width);
+        xCodeSpeed = 2;
+        yBananasSpeed = 2;
+        circleColor1 = color(random(255), random(255), random(255));
+        circleColor2 = color(random(255), random(255), random(255));
+        circleSize = random(80, 230);
+        hit = false;
         gameRunning = false;
+        winMessageTimer = 0;
     }
 }
 
@@ -182,7 +198,7 @@ function mousePressed() {
 }
 
 function makemeLines() { // custom function
-    stroke(0); // black
+    stroke(0); // black 
     strokeWeight(5); 
     line(0, height / 2, width, height / 2); // lines are put in function draw so that they stay on screen
     line(width / 2, 0, width / 2, height);
