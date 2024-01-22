@@ -18,7 +18,7 @@ let circleSize; // variable for random circle size
 
 let hit; // variable for the third circle and falling circles hitting
 
-let winMessageDuration = 60; // Number of frames to display the winning message
+let winMessageDuration = 300; // Number of frames to display the winning message
 let winMessageTimer = 0; // Timer variable
 
 let gameRunning = false;
@@ -136,13 +136,14 @@ function draw() {
             fill(255); // Sets text colour to white
             textSize(30);
             text("Congratulations! You won!", width / 2, height / 2);
+            text("Click the ENTER key to play again", width / 2, 2.18 * height / 4);
             textAlign(CENTER, CENTER);
 
             // Increase the timer
             winMessageTimer++;
         } else {
             // Reset the timer and do other actions if needed
-            winMessageTimer = 0;
+            winMessageTimer = 0;  
         }
     }
 
@@ -162,6 +163,9 @@ function keyPressed() {
     } 
     if (keyCode === 32) {
         gameRunning = true;
+    }
+    if (keyCode === 13) {
+        gameRunning = false;
     }
 }
 
