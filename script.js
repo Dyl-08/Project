@@ -1,4 +1,4 @@
-// This is a p5.js interactive game where the user must direct a circle (starting at the bottom right of the screen) all the way to the top of the Canvas without bumping into two floating circles. If they do so, they will win the game. The objective is to avoid bumping into the two circles before you reach the top. This was based off of another idea I had for a project based on rockets and asteroids, but my coding knowledge - for now - is limited. 
+// This is a p5.js interactive game where the user must direct a circle all the way to the top of the Canvas without bumping into two floating circles. If they hit the top/bottom, it is worth one point. Scoring 5 points will win the game. If the user bumps into the floating circles, the game restarts and they lose their points. This was based off of another idea  for a project based on rockets and asteroids, but as my coding knowledge is limited, I decided to make a simpler version.
 
 
 let circleY; // used so that we can use incremental operators for the two circles floating down the screen
@@ -23,20 +23,24 @@ let winMessageTimer = 0; // Timer variable
 
 let gameRunning = false;
 
+let points = 0; // point system
+
+let textCommand = true; // variable to modify the 'Don't get hit by circles' text 
+
 function setup() {
     createCanvas(windowWidth, windowHeight);
 
     // initilization 
     circleY = 0; 
-    ySpeed = 1;
-    cY = windowHeight;
-    cX = random(width);
-    xCodeSpeed = 1.8;
-    yBananasSpeed = 1.8;
+    ySpeed = 8.5;
+    cY = windowHeight - 20;
+    cX = width / 4 && 2 * width / 3;
+    xCodeSpeed = 6;
+    yBananasSpeed = 6;
     circleColor1 = color(random(255), random(255), random(255));
     circleColor2 = color(random(255), random(255), random(255));
     circleSize = random(80, 230);
- 
+    
 }
 
 function draw() {
@@ -49,12 +53,16 @@ function draw() {
         textSize(30);
         textAlign(CENTER, CENTER);
         text("Click the SpaceBar to start!", width / 2, height / 4);
-        text("Try to use the arrow keys", width / 2, 2 * height / 5);
-        text("to navigate the ellipse to the top!", width / 2, 2.25 * height / 5);
-        text("For advanced functionality,", width / 2, 2.6 * height / 4);
-        text("play around with mousePressed!", width / 2, 2.8 * height / 4);
-    } else {
-
+        text("Try to use the arrow keys", width / 2, height / 3);
+        text("to navigate the ellipse to the top/bottom!", width / 2, height / 2.6);
+        text("SCORE 5 POINTS TO WIN", width / 2, height / 2);
+        text("For changing circle size/colour,", width / 2, height / 1.7);
+        text("click the mouse!", width / 2, height / 1.55);
+        textSize(60);
+        text("INSTRUCTIONS", width / 2, 0.9 * height / 6);
+    } else { 
+        
+    
     // Determine the quadrant based on the position of the third circle
     let quadrant;
     if (cX >= width / 2 && cY >= height / 2) {
@@ -121,33 +129,82 @@ function draw() {
         cY = cY - yBananasSpeed;
         
         // stop direction when hitting the top
-        if (cY <= -50 || cY >= windowHeight) {
+        if (cY <= 0 || cY >= windowHeight) {
             yBananasSpeed = -yBananasSpeed;
         } 
     }
 
     // Display text on collision
     if (hit) {
-        fill(255); // Sets text color to white
-        text("Don't get hit! Try again!", width / 2, height / 2);
-        textSize(30);
-        textAlign(CENTER, CENTER);
+        // Reset parameters
+        circleY = 0; 
+        ySpeed = 5;
+        cY = windowHeight - 20;
+        cX = width / 4 || 2 * width / 4;
+        xCodeSpeed = 5;
+        yBananasSpeed = 5;
+        circleColor1 = color(random(255), random(255), random(255));
+        circleColor2 = color(random(255), random(255), random(255));
+        circleSize = random(80, 230);
+        hit = false;
+        gameRunning = true;
+        winMessageTimer = 0;
+        points = 0; 
     }    
 
     if (cY <= 0) {
-        // Display the winning message for 60 frames
-        if (winMessageTimer < winMessageDuration) {
-            fill(255); // Sets text colour to white
-            textSize(30);
-            text("Congratulations! You won!", width / 2, height / 2);
-            text("Click the ENTER key to play again", width / 2, 2.18 * height / 4);
-            textAlign(CENTER, CENTER);
-    
-            // Increase the timer
-            winMessageTimer++;
+        points = points + 1;
+    }
+
+    // Display the winning message for 60 frames
+    if (points >= 5 && winMessageTimer < winMessageDuration) {
+        fill(255); // Sets text colour to white
+        textSize(30);
+        textAlign(CENTER, CENTER);
+        text("Congratulations! You won!", width / 2, height / 2);
+        text("Click the ENTER key to play again", width / 2, 2.18 * height / 4);
+
+        winMessageTimer++;
+                
+        if (winMessageTimer >= winMessageDuration) {
+            winMessageTimer = 0;
         } 
     }
 
+    if (cY >= windowHeight) {
+        points = points + 1;
+    }
+
+    // Display the winning message for 60 frames
+    if (points >= 5 && winMessageTimer < winMessageDuration) {
+        fill(255); // Sets text colour to white
+        textSize(30);
+        textAlign(CENTER, CENTER);
+        text("Congratulations! You won!", width / 2, height / 2);
+        text("Click the ENTER key to play again", width / 2, 2.18 * height / 4);
+
+       winMessageTimer++;
+
+       if (winMessageTimer >= winMessageDuration) {
+        winMessageTimer = 0;
+       }
+    } 
+    if (textCommand) {
+        fill(255); // Sets text color to white
+        textSize(30); 
+        textAlign(CENTER, CENTER);
+        text("Don't get hit by the circles!", width / 2, height / 2); 
+    }
+    
+    if (points >= 5) {
+        textCommand = false;
+    }
+
+    fill(255); // Sets text colour to white
+    textSize(20); 
+    textAlign(RIGHT, TOP);
+    text(`Points: ${points}`, width - 80, 20);
+    
 }   
 
 }
@@ -163,25 +220,27 @@ function keyPressed() {
     } else if (keyCode === RIGHT_ARROW) { // Add this block for right arrow
         xCodeSpeed = Math.abs(xCodeSpeed); // Set xCodeSpeed to a positive value for right movement
         runCode = true;
-    } else if (keyCode === UP_ARROW) {
+    } else if (keyCode === UP_ARROW && !runBananas) {
+        // We make sure that the up arrow key will ONLY work if the runBananas code in function draw is already false. Previously, when the up arrow key was hit in quick succession the runBananas loop could have activated as true multiple times before keyReleased turned it to false. 
         runBananas = true;
     } 
     if (keyCode === 32) {
         gameRunning = true;
     }
     if (keyCode === 13) {
-        circleY = 0;
-        ySpeed = 1;
-        cY = windowHeight;
-        cX = random(width);
-        xCodeSpeed = 2;
-        yBananasSpeed = 2;
+        circleY = 0; 
+        ySpeed = 5;
+        cY = windowHeight - 20;
+        cX = width / 4 || 2 * width / 4;
+        xCodeSpeed = 5;
+        yBananasSpeed = 5;
         circleColor1 = color(random(255), random(255), random(255));
         circleColor2 = color(random(255), random(255), random(255));
         circleSize = random(80, 230);
         hit = false;
         gameRunning = false;
         winMessageTimer = 0;
+        points = 0; 
     }
 }
 
