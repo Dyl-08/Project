@@ -1,4 +1,4 @@
-// This is a p5.js interactive game where the user must direct a circle all the way to the top of the Canvas without bumping into two floating circles. If they hit the top/bottom, it is worth one point. Scoring 5 points will win the game. If the user bumps into the floating circles, the game restarts and they lose their points. This was based off of another idea  for a project based on rockets and asteroids, but as my coding knowledge is limited, I decided to make a simpler version.
+// This is a p5.js interactive game where the user must direct a circle (starting at the bottom right of the screen) all the way to the top of the Canvas without bumping into two floating circles. If they do so, they will win the game. The objective is to avoid bumping into the two circles before you reach the top. This was based off of another idea I had for a project based on rockets and asteroids, but my coding knowledge - for now - is limited. 
 
 
 let circleY; // used so that we can use incremental operators for the two circles floating down the screen
@@ -21,19 +21,22 @@ let hit; // variable for the third circle and falling circles hitting
 let winMessageDuration = 120; // Number of frames to display the winning message
 let winMessageTimer = 0; // Timer variable
 
-let gameRunning = false;
+let gameRunning = false; 
 
 let points = 0; // point system
 
 let textCommand = true; // variable to modify the 'Don't get hit by circles' text 
 
+//let leftArrowPressed = false; // flags to check if the key is alreaady pressed
+//let rightArrowPressed = false; // flags to check if the key is already pressed
+
 function setup() {
-    createCanvas(windowWidth, windowHeight);
+    createCanvas(500, 500);
 
     // initilization 
     circleY = 0; 
     ySpeed = 8.5;
-    cY = windowHeight - 20;
+    cY = height - 20;
     cX = width / 4 && 2 * width / 3;
     xCodeSpeed = 6;
     yBananasSpeed = 6;
@@ -50,16 +53,16 @@ function draw() {
     // If the game running is false (which it is because we have initialized it as false), then the text will appear. In the keypressed function, the spacebar makes 'gamerunning' true. 
     if (!gameRunning) {
         fill(255); // Sets text colour to white
-        textSize(30);
+        textSize(20);
         textAlign(CENTER, CENTER);
-        text("Click the SpaceBar to start!", width / 2, height / 4);
-        text("Try to use the arrow keys", width / 2, height / 3);
-        text("to navigate the ellipse to the top/bottom!", width / 2, height / 2.6);
-        text("SCORE 5 POINTS TO WIN", width / 2, height / 2);
-        text("For changing circle size/colour,", width / 2, height / 1.7);
-        text("click the mouse!", width / 2, height / 1.55);
+        text("Click the SpaceBar to start!", width / 2, height / 3.5);
+        text("Try to use the arrow keys", width / 2, height / 2.5);
+        text("to navigate the ellipse to the top/bottom!", width / 2, height / 2.2);
+        text("SCORE 5 POINTS TO WIN", width / 2, height / 1.5);
+        text("For changing circle size/colour,", width / 2, height / 1.2);
+        text("click the mouse!", width / 2, height / 1.13);
         textSize(60);
-        text("INSTRUCTIONS", width / 2, 0.9 * height / 6);
+        text("INSTRUCTIONS", width / 2, 0.9 * height / 5.5);
     } else { 
         
     
@@ -82,18 +85,18 @@ function draw() {
     
     fill(circleColor1);
     // draw current frame based on the colour and size variables
-    circle(windowWidth / 4, circleY, circleSize);
+    circle(width / 4, circleY, circleSize);
     // modify state
     circleY = circleY + ySpeed;
 
     fill(circleColor2);
     // draw current frame based on the colour and size variables
-    circle(3 * windowWidth / 4 , circleY, circleSize);
+    circle(3 * width / 4 , circleY, circleSize);
     // modify state
     circleY = circleY + ySpeed;
 
     // reverse direction when hitting the edges
-    if (circleY < 0 || circleY > windowHeight) {
+    if (circleY < 0 || circleY > height) {
         ySpeed = -ySpeed;
     }
 
@@ -103,8 +106,8 @@ function draw() {
     
     // Check for collision with falling circles using dist (or distance) function
     if (
-        (dist(cX, cY, windowWidth / 4, circleY) < circleSize / 2) ||
-        (dist(cX, cY, 3 * windowWidth / 4, circleY) < circleSize / 2)
+        (dist(cX, cY, width / 4, circleY) < circleSize / 2) ||
+        (dist(cX, cY, 3 * width / 4, circleY) < circleSize / 2)
     ) {
         hit = true;
     } else {
@@ -115,10 +118,10 @@ function draw() {
 
     if (runCode) {
         // modify state of third circle horizontally
-        cX = cX + xCodeSpeed; // Change this line to add xCodeSpeed instead of subtracting
+        cX = cX + xCodeSpeed; // Change this line to  add xCodeSpeed instead of subtracting
         
         // reverse direction when hitting the edges 
-        if (cX <= 0 || cX >= windowWidth) {
+        if (cX <= 0 || cX >= width) {
             xCodeSpeed = -xCodeSpeed;
         }
     }
@@ -129,7 +132,7 @@ function draw() {
         cY = cY - yBananasSpeed;
         
         // stop direction when hitting the top
-        if (cY <= 0 || cY >= windowHeight) {
+        if (cY <= 0 || cY >= height) {
             yBananasSpeed = -yBananasSpeed;
         } 
     }
@@ -139,7 +142,7 @@ function draw() {
         // Reset parameters
         circleY = 0; 
         ySpeed = 5;
-        cY = windowHeight - 20;
+        cY = height - 20;
         cX = width / 4 || 2 * width / 4;
         xCodeSpeed = 5;
         yBananasSpeed = 5;
@@ -171,7 +174,7 @@ function draw() {
         } 
     }
 
-    if (cY >= windowHeight) {
+    if (cY >= height) {
         points = points + 1;
     }
 
@@ -230,7 +233,7 @@ function keyPressed() {
     if (keyCode === 13) {
         circleY = 0; 
         ySpeed = 5;
-        cY = windowHeight - 20;
+        cY = height - 20;
         cX = width / 4 || 2 * width / 4;
         xCodeSpeed = 5;
         yBananasSpeed = 5;
@@ -262,3 +265,4 @@ function makemeLines() { // custom function
     line(0, height / 2, width, height / 2); // lines are put in function draw so that they stay on screen
     line(width / 2, 0, width / 2, height);
 }
+
